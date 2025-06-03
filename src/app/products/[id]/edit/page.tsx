@@ -61,7 +61,28 @@ function EditProduct({ params }: { params: { id: string } }) {
     validationSchema: basicSchema,
 
     onSubmit: async (values, actions) => {
-      alert("Please update the code.");
+      try {
+        const payload = {
+          ...values,
+          brands: values.brands?.map((b: any) => b.value) || [],
+          categories: values.categories?.map((c: any) => c.value) || [],
+          occasion: values.occasion?.map((o: any) => o.value) || [],
+          price: values.old_price
+        };
+
+        const { error, message } = await updateProduct(id,payload);
+
+        if (error) {
+          toast.error(error);
+        } else {
+          toast.success(message || "Product created successfully");
+          actions.resetForm();
+          router.push("/products");
+        }
+      } catch (err) {
+        console.error("Submit error:", err);
+        toast.error("Something went wrong");
+      }
     },
   });
 

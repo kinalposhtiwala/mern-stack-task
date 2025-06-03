@@ -7,6 +7,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { occasionOptions } from "../../../../constant";
 import Select from "react-select";
+import { createProduct } from "@/actions/productActions";
+import { toast } from "react-toastify";
 
 function AddProduct() {
   const [brandsOption, setBrandsOption] = useState([]);
@@ -34,7 +36,6 @@ function AddProduct() {
       rating: 0,
       colors: "",
       brands: null,
-      categories: null,
       gender: "men",
       occasion: null,
       image_url: "",
@@ -42,8 +43,30 @@ function AddProduct() {
     validationSchema: basicSchema,
 
     onSubmit: async (values: any, actions) => {
-      alert("Please Update the Code");
-    },
+      try {
+        const payload = {
+          ...values,
+          brands: values.brands?.map((b: any) => b.value) || [],
+          categories: values.categories?.map((c: any) => c.value) || [],
+          occasion: values.occasion?.map((o: any) => o.value) || [],
+          price: values.old_price
+        };
+
+        const { error, message } = await createProduct(payload);
+
+        if (error) {
+          toast.error(error);
+        } else {
+          toast.success(message || "Product created successfully");
+          actions.resetForm();
+          router.push("/products");
+        }
+      } catch (err) {
+        console.error("Submit error:", err);
+        toast.error("Something went wrong");
+      }
+    }
+
   });
 
   useEffect(() => {

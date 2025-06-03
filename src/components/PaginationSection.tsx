@@ -12,16 +12,31 @@ function PaginationSection({
   pageSize: number;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const query = useSearchParams();
-  const searchParams = new URLSearchParams(query);
+  const query = new URLSearchParams(searchParams.toString());
+
+  function updateUrlParam(param: string, value: string | number) {
+    query.set(param, value.toString());
+    router.push(`?${query.toString()}`);
+  }
 
   function handlePrev() {
-    alert("Please update the code.");
+    if (pageNo > 1) {
+      updateUrlParam("page", pageNo - 1);
+    }
   }
 
   function handleNext() {
-    alert("Please update the code.");
+    if (pageNo < lastPage) {
+      updateUrlParam("page", pageNo + 1);
+    }
+  }
+
+  function handlePageSizeChange(e: React.ChangeEvent<HTMLSelectElement>) {
+    const newPageSize = Number(e.target.value);
+    updateUrlParam("pageSize", newPageSize);
+    updateUrlParam("page", 1); // Reset to first page
   }
 
   return (
@@ -30,34 +45,30 @@ function PaginationSection({
         value={pageSize}
         name="page-size"
         className="text-black"
-        onChange={(e) => {
-          alert("Please update the code.");
-        }}
+        onChange={handlePageSizeChange}
       >
-        {["10", "25", "50"].map((val) => {
-          return (
-            <option key={val} value={val}>
-              {val}
-            </option>
-          );
-        })}
+        {["10", "25", "50"].map((val) => (
+          <option key={val} value={val}>
+            {val}
+          </option>
+        ))}
       </select>
       <button
         className="p-3 bg-slate-300 text-black disabled:cursor-not-allowed"
         disabled={pageNo === 1}
         onClick={handlePrev}
       >
-        &larr;Prev
+        &larr; Prev
       </button>
       <p>
-        Page {pageNo} of {lastPage}{" "}
+        Page {pageNo} of {lastPage}
       </p>
       <button
         className="p-3 bg-slate-300 text-black disabled:cursor-not-allowed"
         disabled={pageNo === lastPage}
         onClick={handleNext}
       >
-        Next&rarr;
+        Next &rarr;
       </button>
     </div>
   );

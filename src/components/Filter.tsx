@@ -125,28 +125,45 @@ function Filter({ categories, brands }) {
     }
   }, [sliderValue]);
 
-  function handleBrandsSelect(e) {
-    alert("Please update the code.");
+  function handleBrandsSelect(selectedOptions: any) {
+    const brandIds = selectedOptions.map((option) => option.value).join(",");
+    searchParams.set("brandId", brandIds);
+    searchParams.delete("page"); // Reset to first page when filter changes
+    router.push(`/products?${searchParams.toString()}`, { scroll: false });
   }
 
-  function handleCategoriesSelected(e) {
-    alert("Please update the code.");
+  function handleCategoriesSelected(selectedOptions) {
+    const categoryIds = selectedOptions.map((option) => option.value).join(",");
+    searchParams.set("categoryId", categoryIds);
+    searchParams.delete("page");
+    router.push(`/products?${searchParams.toString()}`, { scroll: false });
   }
 
   function handleSlider(e) {
-    alert("Please update the code.");
+    const value = e.target.value;
+    setSliderValue(value);
+    setSliderChanged(true); // Triggers `useEffect`
   }
 
   const handleGenderChange = (e) => {
-    alert("Please update the code.");
+    const gender = e.target.value;
+    setSelectedGender(gender);
+    searchParams.set("gender", gender);
+    searchParams.delete("page");
+    router.push(`/products?${searchParams.toString()}`, { scroll: false });
   };
 
-  function handleOccasions(e) {
-    alert("Please update the code.");
+  function handleOccasions(selectedOption) {
+    const occasionValues = selectedOption.map((option) => option.value).join(",");
+    searchParams.set("occasions", occasionValues);
+    searchParams.delete("page");
+    router.push(`/products?${searchParams.toString()}`, { scroll: false });
   }
 
-  function handleDiscount(e) {
-    alert("Please update the code.");
+  function handleDiscount(selectedOption) {
+    searchParams.set("discount", selectedOption.value);
+    searchParams.delete("page");
+    router.push(`/products?${searchParams.toString()}`, { scroll: false });
   }
 
   // function handleClearAll() {
@@ -176,7 +193,7 @@ function Filter({ categories, brands }) {
           defaultValue={initialBrandOptions}
         />
       </div>
-      <div className="w-1/3 flex items-center gap-4 mb-4">
+      {/* <div className="w-1/3 flex items-center gap-4 mb-4">
         <span>Categories</span>
         <MultiSelect
           className="text-black flex-1"
@@ -186,7 +203,7 @@ function Filter({ categories, brands }) {
           hasSelectAll={false}
           onChange={handleCategoriesSelected}
         />
-      </div>
+      </div> */}
       <div>
         <span>Select products from Range 1 to 2000</span>
         <br />

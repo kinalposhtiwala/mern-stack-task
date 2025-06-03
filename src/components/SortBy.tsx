@@ -13,28 +13,37 @@ const sortingOptions = [
 
 function SortBy() {
   const router = useRouter();
-  const params = useSearchParams();
+  const params: any = useSearchParams();
   const searchParams = new URLSearchParams(params);
+
+  const currentSort = searchParams.get("sortBy") || "";
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+
+    if (value) {
+      searchParams.set("sortBy", value);
+    } else {
+      searchParams.delete("sortBy");
+    }
+
+    // Reset to first page when sorting changes
+    searchParams.delete("page");
+
+    // Update URL with new params without full reload (client-side navigation)
+    router.push(`?${searchParams.toString()}`);
+  };
 
   return (
     <div className="text-black flex gap-2">
       <p className="text-white text-lg">Sort By</p>
-      <select
-        name="sorting"
-        id="sorting"
-        value={String(searchParams.get("sortBy"))}
-        onChange={(e) => {
-          alert("Please update the code.");
-        }}
-      >
+      <select name="sorting" id="sorting" value={currentSort} onChange={handleChange}>
         <option value="">None</option>
-        {sortingOptions.map((option, i) => {
-          return (
-            <option key={i} value={option.value}>
-              {option.label}
-            </option>
-          );
-        })}
+        {sortingOptions.map((option, i) => (
+          <option key={i} value={option.value}>
+            {option.label}
+          </option>
+        ))}
       </select>
     </div>
   );
